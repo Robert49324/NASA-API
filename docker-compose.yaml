@@ -1,4 +1,5 @@
-version: "3.3"
+version: "3.9"
+
 services:
 
   database:
@@ -10,3 +11,18 @@ services:
       POSTGRES_DB: images
     ports:
       - 5433:5432
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server --console-address ":9001" /data
+
+volumes:
+  minio_storage: {}
