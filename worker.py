@@ -28,7 +28,7 @@ def load():
             cursor.execute('''CREATE TABLE images (  
                   id serial PRIMARY KEY,
                   link VARCHAR(255),
-                  data DATE DEFAULT current_date
+                  date DATE DEFAULT current_date
                   );''')
             conn.commit()
     
@@ -45,12 +45,11 @@ def load():
         
     os.remove("temp/" + os.path.basename(response.json()["hdurl"]))
 
-
 if __name__ == "__main__":
     try:
-        desired_time = ":00"
+        desired_time = "23:00"
 
-        schedule.every().minute.at(desired_time).do(load)
+        schedule.every().day.at(desired_time).do(load)
 
         while True:
             schedule.run_pending()
