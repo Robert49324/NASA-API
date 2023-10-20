@@ -9,12 +9,18 @@ import time
 from minio_serv import client
 import psycopg2
 
-conn = psycopg2.connect(database="images",
-                        host="localhost",
+conn = None
+
+while conn==None:
+    try:
+        conn = psycopg2.connect(database="images",
+                        host="database",
                         user="postgres",
                         password="postgres",
-                        port="5433")
-
+                        port="5432")
+    except:
+        time.sleep(5)
+        
 def load():
     with conn.cursor() as cursor:
         cursor.execute('''SELECT EXISTS (
@@ -47,9 +53,9 @@ def load():
 
 if __name__ == "__main__":
     try:
-        desired_time = "23:00"
+        desired_time = ":00"
 
-        schedule.every().day.at(desired_time).do(load)
+        schedule.every().minute.at(desired_time).do(load)
 
         while True:
             schedule.run_pending()

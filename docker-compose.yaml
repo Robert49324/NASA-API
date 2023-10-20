@@ -11,8 +11,12 @@ services:
       POSTGRES_DB: images
     ports:
       - 5433:5432
+    networks:
+      - network
+
 
   minio:
+    restart: always
     image: minio/minio
     ports:
       - "9000:9000"
@@ -23,6 +27,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     command: server --console-address ":9001" /data
+    networks:
+      - network
 
   server:
     build:
@@ -30,8 +36,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    networks:
+      - network
+    depends_on:
+      - database
 
 volumes:
   minio_storage: {}
+
+networks:
+  network:
 
   

@@ -4,10 +4,10 @@ import psycopg2
 app = Flask(__name__)
 
 conn = psycopg2.connect(database="images",
-                        host="localhost",
+                        host="database",
                         user="postgres",
                         password="postgres",
-                        port="5433")
+                        port="5432")
     
 @app.route("/")
 def home():

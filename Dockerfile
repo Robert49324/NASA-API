@@ -1,6 +1,5 @@
 FROM python:3.10
 
-
 WORKDIR /app
 
 COPY requirements.txt .
@@ -11,5 +10,7 @@ COPY . .
 COPY worker.py /app/
 COPY server.py /app/
 COPY minio_serv.py /app/
+
+EXPOSE 5000
 
 CMD ["python", "worker.py", "server.py"]
