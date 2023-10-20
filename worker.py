@@ -18,39 +18,39 @@ conn = psycopg2.connect(database="images",
 def load():
     with conn.cursor() as cursor:
         cursor.execute('''SELECT EXISTS (
-                          SELECT FROM 
-                            information_schema.tables 
-                          WHERE 
-                            table_schema LIKE 'public' AND 
-                            table_type LIKE 'BASE TABLE' AND
-                            table_name = 'actor'
-                          );''')
-        if cursor.fetchall()[0] == False:
-            cursor.execute('''CREATE TABLE images(  
-                      id serial PRIMARY KEY,
-                      link VARCHAR(255),
-                      data DATE DEFAULT current_date
-                      );''')
+                      SELECT 1
+                      FROM information_schema.tables
+                      WHERE table_schema = 'public' AND
+                            table_type = 'BASE TABLE' AND
+                            table_name = 'images'
+                    );''')
+        if not cursor.fetchone()[0]:
+            cursor.execute('''CREATE TABLE images (  
+                  id serial PRIMARY KEY,
+                  link VARCHAR(255),
+                  data DATE DEFAULT current_date
+                  );''')
             conn.commit()
     
     response = requests.get("https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY")
     img = Image.open(requests.get(response.json()["hdurl"], stream = True).raw)
     img.save("temp/" + os.path.basename(response.json()["hdurl"]))
 
-    client.fput_object("images", os.path.basename(response.json()["hdurl"]), "temp/" + os.path.basename(response.json()["hdurl"]))
+    client.fput_object("images", os.path.basename(response.json()["hdurl"]), "temp/" + os.path.basename(response.json()["hdurl"]), content_type="image/jpg")
     
     with conn.cursor() as cursor:
         ins = 'INSERT INTO images (link) VALUES(%s)'
-        cursor.execute(ins,("images/" + os.path.basename(response.json()["hdurl"]),))
+        cursor.execute(ins,("127.0.0.1:9000/images/" + os.path.basename(response.json()["hdurl"]),))
         conn.commit()
         
     os.remove("temp/" + os.path.basename(response.json()["hdurl"]))
 
+
 if __name__ == "__main__":
     try:
-        desired_time = "11:49"
+        desired_time = ":00"
 
-        schedule.every().day.at(desired_time).do(load)
+        schedule.every().minute.at(desired_time).do(load)
 
         while True:
             schedule.run_pending()
