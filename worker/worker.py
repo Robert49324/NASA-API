@@ -53,9 +53,9 @@ def load():
 
 if __name__ == "__main__":
     try:
-        desired_time = ":00"
+        desired_time = "23:00"
 
-        schedule.every().minute.at(desired_time).do(load)
+        schedule.every().day.at(desired_time).do(load)
 
         while True:
             schedule.run_pending()
