@@ -14,7 +14,6 @@ services:
     networks:
       - network
 
-
   minio:
     restart: always
     image: minio/minio
@@ -30,9 +29,18 @@ services:
     networks:
       - network
 
+  worker:
+      build:
+        context: ./worker
+        dockerfile: Dockerfile
+      networks:
+        - network
+      depends_on:
+        - database
+  
   server:
     build:
-      context: ./
+      context: ./server
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
